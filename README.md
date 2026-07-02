@@ -40,10 +40,11 @@ This project implements an **Agentic Loop** that introduces quality gates across
 
 ---
 
-## 🛠️ Tech Stack & Key Paradigms
+# 🛠️ Tech Stack & Key Paradigms
 
 * **Language:** Python 3.11+
-* **LLM Engine:** `gemini-2.5-flash`
+* **Vector Math Engine:** Native `NumPy` Linear Algebra (Raw Cosine Similarity execution)
+* **LLM Engine:** `gemini-2.5-flash-lite` (Configured for high availability and low-latency structured extraction)
 * **Orchestration:** Pure Python control flow (Eliminates framework abstraction bloat)
 * **Structured Data Guardrails:** `Pydantic` and `google-genai` Schema Engine
 
