@@ -3,9 +3,9 @@ import os
 import numpy as np
 from typing import List
 from google.genai import types
-from src.config import client, EMBEDDING_MODEL, GENERATION_MODEL
-from src.schemas import BatchContextVerification, HallucinationCheck
-from src.ingestion import load_file, chunk_text
+from config import client, EMBEDDING_MODEL, GENERATION_MODEL
+from schemas import BatchContextVerification, HallucinationCheck
+from ingestion import load_file, chunk_text
 
 def get_embedding(text: str) -> np.ndarray:
     """Invokes Gemini Embedding engine to convert text into a vector."""

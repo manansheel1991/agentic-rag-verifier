@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e0fd79f3-dc88-4264-9b74-d0ed5f148265" name="Changes" comment="Replaced hardcoded retrieval with live cosine similarity vector embeddings.&#10;&#10;Some other technical changes.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+    <list default="true" id="e0fd79f3-dc88-4264-9b74-d0ed5f148265" name="Changes" comment="feat: add dynamic file ingestion and sliding-window chunking">
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -79,7 +77,15 @@
       <option name="project" value="LOCAL" />
       <updated>1782981840597</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="feat: add dynamic file ingestion and sliding-window chunking">
+      <option name="closed" value="true" />
+      <created>1785062813977</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1785062813977</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -96,6 +102,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial commit" />
     <MESSAGE value="Replaced hardcoded retrieval with live cosine similarity vector embeddings.&#10;&#10;Some other technical changes." />
-    <option name="LAST_COMMIT_MESSAGE" value="Replaced hardcoded retrieval with live cosine similarity vector embeddings.&#10;&#10;Some other technical changes." />
+    <MESSAGE value="feat: add dynamic file ingestion and sliding-window chunking" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: add dynamic file ingestion and sliding-window chunking" />
   </component>
 </project>
