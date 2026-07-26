@@ -1,4 +1,3 @@
-```text
 # Agentic RAG Verifier
 
 A defensive, multi-agent Retrieval-Augmented Generation (RAG) framework built with Python, `google-genai`, `openai`, and `Pydantic`.
