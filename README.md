@@ -5,7 +5,7 @@ A small Python/Pydantic RAG pipeline with persistent local Chroma storage:
 ```text
 Document → page-aware chunks → explicit embeddings → persistent cosine index
 Query → same embedding model → selected documents → relevance critic
-      → answer generator → grounding auditor → typed PipelineResult
+      → structured claims → claim auditor → citation gates → typed PipelineResult
 ```
 
 The critics reduce unsupported answers; model-based verification does not guarantee factual correctness. No agent framework is used.
@@ -55,9 +55,31 @@ result = run_pipeline("data/report.md", "What changed?")
 print(result.model_dump_json(indent=2))
 ```
 
-Results include outcome, verified answer, typed sources (including text), critic audit, stage timings, actual model identities, and token totals when reported by providers. Failures retain completed timings and diagnostics. An unfaithful or unaudited answer is withheld. `generation_model_used` is the model that synthesized the answer; `model_identities` includes all responding models across the critics and generator. Token totals include available usage; providers do not always return usage, and missing usage is represented by `None`, not zero.
+Results include outcome, verified answer, typed sources (including text), claim audits, unanswered parts, source disagreements, stage timings, actual model identities, and token totals when reported by providers. Failures retain completed timings and diagnostics. `generation_model_used` is the model that drafted the claims; `model_identities` includes all responding models across the critics and generator. Token totals include available usage; providers do not always return usage, and missing usage is represented by `None`, not zero.
 
 For multiple selected documents, ingest each with the same configuration and call `src.ingestion.retrieve(query, [doc1.id, doc2.id], model, chunk_size, overlap)`. Only those documents' active versions are searched.
+
+## Claim-level verification
+
+The generator returns a `StructuredAnswer`: requested question parts, atomic factual claims with stable chunk citations, and known unanswered parts. A single structured audit evaluates every claim and every requested part. All model stages explicitly treat document content as untrusted data. There are no regeneration or repair loops.
+
+Each entry in `result.claims` separates:
+
+- `judgment`: the model's `supported`, `contradicted`, or `insufficient_evidence` verdict, exact quoted evidence, and brief explanation. The auditor checks numbers, units, dates, qualifications, and whether the supported claims fully address each question part.
+- `checks`: deterministic Python checks for retrieved citation membership, duplicate citations, and exact excerpt containment in the referenced chunks. Every cited chunk must have an excerpt; missing, invented, miscited, or whitespace-only excerpts block the claim. These checks establish provenance, **not semantic support**.
+- `verdict`: the final gated verdict. A failed citation check becomes `insufficient_evidence`, regardless of the model's judgment. Explicit opposing evidence conservatively blocks a claim as `contradicted` even if the model also labelled it supported. Resolved excerpts carry document names and PDF page numbers from stored metadata.
+
+`result.answer` contains only supported claim text and validated source references, one claim per line. It adds no generated introduction, conclusion, or audit explanation. Unsupported claim text remains available only in the structured audit diagnostics. The CLI retains its flags and JSON output; consumers should display `answer` as the factual answer and label the diagnostic fields separately.
+
+Outcomes now use `answered`, `partial`, and `abstained` instead of `success`/`failure`:
+
+- `answered`: at least one supported claim and no known unanswered parts.
+- `partial`: some supported claims, with unresolved parts explicitly listed in `unanswered_parts`.
+- `abstained`: no supported answer, including input, provider, or malformed-audit failures. `answer` is `None` and operational failures retain error fields.
+
+Dropping any claim leaves its question part unresolved, even if another claim for that part survives. Parts without supported claims, generator-reported gaps, and auditor-reported incomplete or omitted question parts also remain unresolved. This is deliberately conservative. Question decomposition and semantic completeness still depend on model judgment; `answered` is not a proof that the model noticed every possible omission.
+
+The auditor sees **all retrieved chunks**, including those removed by the relevance filter, to look for source disagreements. Validated opposing excerpts appear in `result.disagreements` with source names, page references and chunk IDs; disputed claims are withheld from `answer`. Disagreement detection is limited to retrieved evidence (the CLI retrieves the top three chunks), and the model may miss conflicts. Claim auditing is timed as `claim_audit_ms`.
 
 ## Index guarantees
 
@@ -82,4 +104,6 @@ python -m pytest -q
 
 Tests use temporary local Chroma directories, mocked model providers, blocked Python network connections and placeholder keys. They cover fresh-process persistence, idempotency, changed/failed updates, failed cleanup, document isolation, real PDF pages and offsets, metadata/model mismatch, invalid vectors and chunking, strict critics, provider failures, timeouts/retries, generation fallback, usage, typed results and CLI behavior. No paid API calls or embedding downloads are needed.
 
-The test suite verifies provider integration through mocks; live credentials, live model compatibility and provider quality are not tested. Local readers/writers are serialized for correctness, so this implementation is intended for modest local workloads rather than distributed serving. Text extraction supplies page-relative character offsets, not PDF bounding boxes. Model critics can still make mistakes.
+Focused claim tests cover valid support, fabricated IDs and excerpts, unsupported numbers, contradictory evidence, source disagreements, partial answers, missing coverage and malformed audits. Mocked tests validate **enforcement**, not the accuracy of the model's semantic judgment. A model can still incorrectly label a claim supported despite a real citation and matching quote.
+
+Live credentials, live model compatibility and provider quality are not tested. Local readers/writers are serialized for correctness, so this implementation is intended for modest local workloads rather than distributed serving. Text extraction supplies page-relative character offsets, not PDF bounding boxes. Model critics can still make mistakes.

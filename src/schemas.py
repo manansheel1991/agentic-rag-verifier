@@ -22,6 +22,76 @@ class HallucinationCheck(BaseModel):
     verdict: str
 
 
+class Claim(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    claim_id: str = Field(min_length=1)
+    part: str = Field(min_length=1, description="Exact requested_parts entry this claim addresses.")
+    text: str = Field(min_length=1, description="One atomic factual claim, including units and qualifications.")
+    cited_chunk_ids: List[str] = Field(min_length=1)
+
+
+class StructuredAnswer(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    requested_parts: List[str] = Field(min_length=1, description="Every part of the user's question, including unanswerable parts.")
+    claims: List[Claim]
+    unanswered_parts: List[str]
+
+
+class EvidenceQuote(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    chunk_id: str
+    excerpt: str = Field(min_length=1, description="Exact nonempty substring of this chunk; no paraphrasing or ellipses.")
+
+
+class ClaimJudgment(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    claim_id: str
+    verdict: Literal["supported", "contradicted", "insufficient_evidence"]
+    evidence: List[EvidenceQuote]
+    conflicting_evidence: List[EvidenceQuote]
+    explanation: str = Field(min_length=1)
+
+
+class PartEvaluation(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    part: str
+    is_answered: bool
+    explanation: str
+
+
+class ClaimAudit(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    evaluations: List[ClaimJudgment]
+    part_evaluations: List[PartEvaluation]
+    unanswered_parts: List[str] = Field(description="Also include question parts omitted by the draft's requested_parts.")
+
+
+class CitationChecks(BaseModel):
+    passed: bool
+    errors: List[str]
+
+
+class SourceExcerpt(EvidenceQuote):
+    document_id: str
+    file_name: str
+    page_number: Optional[int]
+
+
+class VerifiedClaim(BaseModel):
+    claim: Claim
+    judgment: ClaimJudgment  # The model's semantic opinion, kept separate from Python checks.
+    checks: CitationChecks
+    verdict: Literal["supported", "contradicted", "insufficient_evidence"]
+    evidence: List[SourceExcerpt]
+    conflicting_evidence: List[SourceExcerpt]
+
+
+class SourceDisagreement(BaseModel):
+    claim_id: str
+    evidence: List[SourceExcerpt]
+    explanation: str
+
+
 class DocumentMetadata(BaseModel):
     id: str  # Canonical source path identity, independent of content/version/model.
     file_path: str
@@ -63,8 +133,12 @@ class ChunkMetadata(BaseModel):
 
 
 class PipelineResult(BaseModel):
-    outcome: Literal["success", "failure"]
+    outcome: Literal["answered", "partial", "abstained"]
     answer: Optional[str] = None
+    claims: List[VerifiedClaim] = Field(default_factory=list)
+    requested_parts: List[str] = Field(default_factory=list)
+    unanswered_parts: List[str] = Field(default_factory=list)
+    disagreements: List[SourceDisagreement] = Field(default_factory=list)
     sources: List[ChunkMetadata] = Field(default_factory=list)
     audit_log: List[str] = Field(default_factory=list)
     timings: Dict[str, float] = Field(default_factory=dict)
