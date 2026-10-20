@@ -1,22 +1,25 @@
-# Secrets and Credentials
+# Secrets
 .env
-.env.local
+.env.*
+!.env.example
 *.env
-
-# Python Virtual Environments
+# Environments, caches and OS files
 .venv/
-env/
+.venv-*/
 venv/
+env/
 ENV/
-
-# Python Cache and Compiled Bytecode
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
 .pytest_cache/
-
-# Operating System Files
 .DS_Store
 Thumbs.db
+.idea/
+# Generated documents and local indexes
+/data/
 /src/data/
+/chroma_db/
+/test_chroma_db/
+**/chroma.sqlite3*
+**/documents.sqlite3*
+**/documents.lock
