@@ -36,6 +36,8 @@ def verify_claims(draft: StructuredAnswer, audit: ClaimAudit, chunks) -> list[Ve
         judgment = judgments[claim.claim_id]
         errors = []
         cited = set(claim.cited_chunk_ids)
+        if not cited:
+            errors.append("Missing chunk citations")
         if len(cited) != len(claim.cited_chunk_ids):
             errors.append("Duplicate cited chunk IDs")
         if cited - evidence.keys():
@@ -75,20 +77,26 @@ def verify_claims(draft: StructuredAnswer, audit: ClaimAudit, chunks) -> list[Ve
     return verified
 
 
-def render_supported_claims(claims: list[VerifiedClaim]):
-    """No model-written preamble, conclusion, or other unaudited answer prose."""
+def render_claims(claims, sources):
+    """Shared answer format; formatting alone makes no support judgment."""
+    source_map = {source.chunk_id: source for source in sources}
     lines = []
-    for item in claims:
-        if item.verdict != "supported" or not item.checks.passed:
-            continue
+    for claim in claims:
         references = []
-        for source in item.evidence:
-            page = f", p. {source.page_number}" if source.page_number is not None else ""
-            reference = f"[{source.file_name}{page}; {source.chunk_id}]"
+        for identity in claim.cited_chunk_ids:
+            source = source_map.get(identity)
+            page = f", p. {source.page_number}" if source and source.page_number is not None else ""
+            reference = f"[{source.file_name if source else 'unknown source'}{page}; {identity}]"
             if reference not in references:
                 references.append(reference)
-        lines.append(f"{item.claim.text} {' '.join(references)}")
+        lines.append(f"{claim.text} {' '.join(references)}".rstrip())
     return "\n".join(lines) or None
+
+
+def render_supported_claims(claims: list[VerifiedClaim]):
+    """No model-written preamble, conclusion, or other unaudited answer prose."""
+    supported = [item for item in claims if item.verdict == "supported" and item.checks.passed]
+    return render_claims([item.claim for item in supported], [q for item in supported for q in item.evidence])
 
 
 def apply_claim_audit(result: PipelineResult, draft: StructuredAnswer, audit: ClaimAudit, chunks):

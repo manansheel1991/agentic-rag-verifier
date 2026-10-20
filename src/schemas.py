@@ -27,7 +27,7 @@ class Claim(BaseModel):
     claim_id: str = Field(min_length=1)
     part: str = Field(min_length=1, description="Exact requested_parts entry this claim addresses.")
     text: str = Field(min_length=1, description="One atomic factual claim, including units and qualifications.")
-    cited_chunk_ids: List[str] = Field(min_length=1)
+    cited_chunk_ids: List[str] = Field(description="Cite retrieved evidence; an empty list is retained for audit, never assumed supported.")
 
 
 class StructuredAnswer(BaseModel):

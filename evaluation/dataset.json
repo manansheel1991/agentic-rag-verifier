@@ -1,0 +1,550 @@
+{
+  "name": "Synthetic RAG development set v1",
+  "description": "Synthetic development data requiring human review, not an independent benchmark. No measured model results are included.",
+  "review_required": true,
+  "license": "CC0-1.0",
+  "documents": [
+    "cedar-operations.md",
+    "cedar-planning.md",
+    "harbor-finance.md",
+    "harbor-onboarding.md",
+    "harbor-operations.md",
+    "harbor-service.md"
+  ],
+  "questions": [
+    {
+      "id": "direct-01",
+      "category": "direct",
+      "question": "What is Harbor's peak processing rate?",
+      "answerability": "answerable",
+      "reference_answer": "420 events per second.",
+      "required_facts": [
+        "Peak rate: 420 events per second."
+      ],
+      "gold_evidence": [
+        {
+          "document": "harbor-operations.md",
+          "excerpt": "The Harbor service processes 420 events per second at peak.",
+          "char_start": 33,
+          "char_end": 92,
+          "page_number": null
+        }
+      ]
+    },
+    {
+      "id": "direct-02",
+      "category": "direct",
+      "question": "Who approves Harbor cloud spending?",
+      "answerability": "answerable",
+      "reference_answer": "Mira Sen.",
+      "required_facts": [
+        "Mira Sen approves cloud spending."
+      ],
+      "gold_evidence": [
+        {
+          "document": "harbor-finance.md",
+          "excerpt": "Mira Sen approves cloud spending.",
+          "char_start": 75,
+          "char_end": 108,
+          "page_number": null
+        }
+      ]
+    },
+    {
+      "id": "direct-03",
+      "category": "direct",
+      "question": "How long does standard Harbor onboarding take?",
+      "answerability": "answerable",
+      "reference_answer": "Three business days.",
+      "required_facts": [
+        "Three business days, not calendar days."
+      ],
+      "gold_evidence": [
+        {
+          "document": "harbor-onboarding.md",
+          "excerpt": "Standard onboarding takes three business days.",
+          "char_start": 106,
+          "char_end": 152,
+          "page_number": null
+        }
+      ]
+    },
+    {
+      "id": "direct-04",
+      "category": "direct",
+      "question": "When is the Harbor support desk open?",
+      "answerability": "answerable",
+      "reference_answer": "Monday through Friday, 09:00–17:00 UTC.",
+      "required_facts": [
+        "Monday through Friday.",
+        "09:00–17:00 UTC."
+      ],
+      "gold_evidence": [
+        {
+          "document": "harbor-service.md",
+          "excerpt": "Harbor support operates Monday through Friday from 09:00 to 17:00 UTC.",
+          "char_start": 35,
+          "char_end": 105,
+          "page_number": null
+        }
+      ]
+    },
+    {
+      "id": "direct-05",
+      "category": "direct",
+      "question": "How long does Harbor retain event logs?",
+      "answerability": "answerable",
+      "reference_answer": "14 days.",
+      "required_facts": [
+        "Harbor event logs: 14 days."
+      ],
+      "gold_evidence": [
+        {
+          "document": "harbor-operations.md",
+          "excerpt": "Harbor retains event logs for 14 days.",
+          "char_start": 253,
+          "char_end": 291,
+          "page_number": null
+        }
+      ]
+    },
+    {
+      "id": "multi_passage-01",
+      "category": "multi_passage",
+      "question": "What are Harbor's monthly cloud budget and peak processing rate?",
+      "answerability": "answerable",
+      "reference_answer": "24,000 USD per month and 420 events per second.",
+      "required_facts": [
+        "Monthly budget: 24,000 USD.",
+        "Peak processing: 420 events per second."
+      ],
+      "gold_evidence": [
+        {
+          "document": "harbor-finance.md",
+          "excerpt": "Harbor's monthly cloud budget is 24,000 USD.",
+          "char_start": 30,
+          "char_end": 74,
+          "page_number": null
+        },
+        {
+          "document": "harbor-operations.md",
+          "excerpt": "The Harbor service processes 420 events per second at peak.",
+          "char_start": 33,
+          "char_end": 92,
+          "page_number": null
+        }
+      ]
+    },
+    {
+      "id": "multi_passage-02",
+      "category": "multi_passage",
+      "question": "Who owns Harbor onboarding, and who approves cloud spending?",
+      "answerability": "answerable",
+      "reference_answer": "Lila Chen owns onboarding; Mira Sen approves cloud spending.",
+      "required_facts": [
+        "Onboarding: Lila Chen.",
+        "Cloud spending: Mira Sen."
+      ],
+      "gold_evidence": [
+        {
+          "document": "harbor-onboarding.md",
+          "excerpt": "Lila Chen owns onboarding.",
+          "char_start": 153,
+          "char_end": 179,
+          "page_number": null
+        },
+        {
+          "document": "harbor-finance.md",
+          "excerpt": "Mira Sen approves cloud spending.",
+          "char_start": 75,
+          "char_end": 108,
+          "page_number": null
+        }
+      ]
+    },
+    {
+      "id": "multi_passage-03",
+      "category": "multi_passage",
+      "question": "How often are Harbor recovery drills, and when does scheduled maintenance begin?",
+      "answerability": "answerable",
+      "reference_answer": "Drills occur every two weeks on Sunday at 02:00 UTC; maintenance starts Saturday at 01:00 UTC.",
+      "required_facts": [
+        "Drills every two weeks, Sunday 02:00 UTC.",
+        "Maintenance Saturday 01:00 UTC."
+      ],
+      "gold_evidence": [
+        {
+          "document": "harbor-operations.md",
+          "excerpt": "Disaster recovery drills occur every two weeks on Sunday at 02:00 UTC.",
+          "char_start": 181,
+          "char_end": 251,
+          "page_number": null
+        },
+        {
+          "document": "harbor-service.md",
+          "excerpt": "Scheduled Harbor maintenance starts Saturday at 01:00 UTC and lasts 90 minutes.",
+          "char_start": 159,
+          "char_end": 238,
+          "page_number": null
+        }
+      ]
+    },
+    {
+      "id": "multi_passage-04",
+      "category": "multi_passage",
+      "question": "What must a new Harbor user complete for access, and how soon are critical alerts acknowledged?",
+      "answerability": "answerable",
+      "reference_answer": "Security training and manager approval; critical alerts are acknowledged within 15 minutes.",
+      "required_facts": [
+        "Completed security training.",
+        "Manager approval.",
+        "Critical alert acknowledgement within 15 minutes."
+      ],
+      "gold_evidence": [
+        {
+          "document": "harbor-onboarding.md",
+          "excerpt": "Harbor access requires completed security training and manager approval.",
+          "char_start": 33,
+          "char_end": 105,
+          "page_number": null
+        },
+        {
+          "document": "harbor-operations.md",
+          "excerpt": "The on-call engineer acknowledges critical alerts within 15 minutes.",
+          "char_start": 292,
+          "char_end": 360,
+          "page_number": null
+        }
+      ]
+    },
+    {
+      "id": "multi_passage-05",
+      "category": "multi_passage",
+      "question": "What are Harbor's support response target and cloud-purchase approval threshold?",
+      "answerability": "answerable",
+      "reference_answer": "Four business hours for initial response; purchases above 2,000 USD require two approvals.",
+      "required_facts": [
+        "Four business hours, initial response.",
+        "Above 2,000 USD, two approvals."
+      ],
+      "gold_evidence": [
+        {
+          "document": "harbor-service.md",
+          "excerpt": "The initial response target is four business hours.",
+          "char_start": 106,
+          "char_end": 157,
+          "page_number": null
+        },
+        {
+          "document": "harbor-finance.md",
+          "excerpt": "Purchases above 2,000 USD need two approvals.",
+          "char_start": 109,
+          "char_end": 154,
+          "page_number": null
+        }
+      ]
+    },
+    {
+      "id": "absent-01",
+      "category": "absent",
+      "question": "What database engine does Harbor use?",
+      "answerability": "unanswerable",
+      "reference_answer": "The supplied documents do not provide this information.",
+      "required_facts": [
+        "Explicitly acknowledge that the requested information is absent; do not invent a value."
+      ],
+      "gold_evidence": []
+    },
+    {
+      "id": "absent-02",
+      "category": "absent",
+      "question": "What is Harbor's annual revenue?",
+      "answerability": "unanswerable",
+      "reference_answer": "The supplied documents do not provide this information.",
+      "required_facts": [
+        "Explicitly acknowledge that the requested information is absent; do not invent a value."
+      ],
+      "gold_evidence": []
+    },
+    {
+      "id": "absent-03",
+      "category": "absent",
+      "question": "What is Harbor's employee expense reimbursement policy?",
+      "answerability": "unanswerable",
+      "reference_answer": "The supplied documents do not provide this information.",
+      "required_facts": [
+        "Explicitly acknowledge that the requested information is absent; do not invent a value."
+      ],
+      "gold_evidence": []
+    },
+    {
+      "id": "absent-04",
+      "category": "absent",
+      "question": "What percentage uptime SLA is guaranteed for Harbor?",
+      "answerability": "unanswerable",
+      "reference_answer": "The supplied documents do not provide this information.",
+      "required_facts": [
+        "Explicitly acknowledge that the requested information is absent; do not invent a value."
+      ],
+      "gold_evidence": []
+    },
+    {
+      "id": "absent-05",
+      "category": "absent",
+      "question": "Which encryption algorithm protects Harbor backups?",
+      "answerability": "unanswerable",
+      "reference_answer": "The supplied documents do not provide this information.",
+      "required_facts": [
+        "Explicitly acknowledge that the requested information is absent; do not invent a value."
+      ],
+      "gold_evidence": []
+    },
+    {
+      "id": "incorrect_premise-01",
+      "category": "incorrect_premise",
+      "question": "Why does Harbor retain event logs for 60 days?",
+      "answerability": "answerable",
+      "reference_answer": "The premise is incorrect: Harbor retains event logs for 14 days; no 60-day rationale is given.",
+      "required_facts": [
+        "Correct 60 to 14 days.",
+        "Do not invent a rationale for 60 days."
+      ],
+      "gold_evidence": [
+        {
+          "document": "harbor-operations.md",
+          "excerpt": "Harbor retains event logs for 14 days.",
+          "char_start": 253,
+          "char_end": 291,
+          "page_number": null
+        }
+      ]
+    },
+    {
+      "id": "incorrect_premise-02",
+      "category": "incorrect_premise",
+      "question": "Who approved Harbor's 50,000 USD monthly cloud budget?",
+      "answerability": "answerable",
+      "reference_answer": "The stated budget is 24,000 USD monthly, not 50,000 USD; Mira Sen approves cloud spending.",
+      "required_facts": [
+        "Correct the budget to 24,000 USD monthly.",
+        "Mira Sen approves cloud spending."
+      ],
+      "gold_evidence": [
+        {
+          "document": "harbor-finance.md",
+          "excerpt": "Harbor's monthly cloud budget is 24,000 USD.",
+          "char_start": 30,
+          "char_end": 74,
+          "page_number": null
+        },
+        {
+          "document": "harbor-finance.md",
+          "excerpt": "Mira Sen approves cloud spending.",
+          "char_start": 75,
+          "char_end": 108,
+          "page_number": null
+        }
+      ]
+    },
+    {
+      "id": "incorrect_premise-03",
+      "category": "incorrect_premise",
+      "question": "Why does Harbor onboarding take ten business days?",
+      "answerability": "answerable",
+      "reference_answer": "Standard onboarding is three business days; no explanation for ten days is supplied.",
+      "required_facts": [
+        "Correct ten to three business days.",
+        "Do not invent a ten-day rationale."
+      ],
+      "gold_evidence": [
+        {
+          "document": "harbor-onboarding.md",
+          "excerpt": "Standard onboarding takes three business days.",
+          "char_start": 106,
+          "char_end": 152,
+          "page_number": null
+        }
+      ]
+    },
+    {
+      "id": "incorrect_premise-04",
+      "category": "incorrect_premise",
+      "question": "What permits Harbor to acknowledge critical alerts after 45 minutes?",
+      "answerability": "answerable",
+      "reference_answer": "The stated acknowledgement requirement is within 15 minutes, not 45.",
+      "required_facts": [
+        "Correct 45 to within 15 minutes.",
+        "Do not invent an exception permitting 45 minutes."
+      ],
+      "gold_evidence": [
+        {
+          "document": "harbor-operations.md",
+          "excerpt": "The on-call engineer acknowledges critical alerts within 15 minutes.",
+          "char_start": 292,
+          "char_end": 360,
+          "page_number": null
+        }
+      ]
+    },
+    {
+      "id": "incorrect_premise-05",
+      "category": "incorrect_premise",
+      "question": "Why does Harbor scheduled maintenance last 180 minutes?",
+      "answerability": "answerable",
+      "reference_answer": "Scheduled maintenance lasts 90 minutes; no 180-minute rationale is supplied.",
+      "required_facts": [
+        "Correct 180 to 90 minutes.",
+        "Do not invent a 180-minute rationale."
+      ],
+      "gold_evidence": [
+        {
+          "document": "harbor-service.md",
+          "excerpt": "Scheduled Harbor maintenance starts Saturday at 01:00 UTC and lasts 90 minutes.",
+          "char_start": 159,
+          "char_end": 238,
+          "page_number": null
+        }
+      ]
+    },
+    {
+      "id": "conflict-01",
+      "category": "conflict",
+      "question": "When is the Cedar pilot launch?",
+      "answerability": "conflicted",
+      "reference_answer": "The planning memo says: The Cedar pilot launch is May 12, 2027. The operations memo says: The Cedar pilot launch is May 19, 2027. Neither has priority; report the disagreement rather than choose one value.",
+      "required_facts": [
+        "The Cedar pilot launch is May 12, 2027.",
+        "The Cedar pilot launch is May 19, 2027.",
+        "Identify both source memos and state that the disagreement is unresolved."
+      ],
+      "gold_evidence": [
+        {
+          "document": "cedar-planning.md",
+          "excerpt": "The Cedar pilot launch is May 12, 2027.",
+          "char_start": 45,
+          "char_end": 84,
+          "page_number": null
+        },
+        {
+          "document": "cedar-operations.md",
+          "excerpt": "The Cedar pilot launch is May 19, 2027.",
+          "char_start": 47,
+          "char_end": 86,
+          "page_number": null
+        }
+      ]
+    },
+    {
+      "id": "conflict-02",
+      "category": "conflict",
+      "question": "How many users can the Cedar pilot support?",
+      "answerability": "conflicted",
+      "reference_answer": "The planning memo says: Cedar pilot capacity is 800 users. The operations memo says: Cedar pilot capacity is 1,200 users. Neither has priority; report the disagreement rather than choose one value.",
+      "required_facts": [
+        "Cedar pilot capacity is 800 users.",
+        "Cedar pilot capacity is 1,200 users.",
+        "Identify both source memos and state that the disagreement is unresolved."
+      ],
+      "gold_evidence": [
+        {
+          "document": "cedar-planning.md",
+          "excerpt": "Cedar pilot capacity is 800 users.",
+          "char_start": 85,
+          "char_end": 119,
+          "page_number": null
+        },
+        {
+          "document": "cedar-operations.md",
+          "excerpt": "Cedar pilot capacity is 1,200 users.",
+          "char_start": 87,
+          "char_end": 123,
+          "page_number": null
+        }
+      ]
+    },
+    {
+      "id": "conflict-03",
+      "category": "conflict",
+      "question": "How long are Cedar pilot logs retained?",
+      "answerability": "conflicted",
+      "reference_answer": "The planning memo says: Cedar retains pilot logs for 30 days. The operations memo says: Cedar retains pilot logs for 45 days. Neither has priority; report the disagreement rather than choose one value.",
+      "required_facts": [
+        "Cedar retains pilot logs for 30 days.",
+        "Cedar retains pilot logs for 45 days.",
+        "Identify both source memos and state that the disagreement is unresolved."
+      ],
+      "gold_evidence": [
+        {
+          "document": "cedar-planning.md",
+          "excerpt": "Cedar retains pilot logs for 30 days.",
+          "char_start": 120,
+          "char_end": 157,
+          "page_number": null
+        },
+        {
+          "document": "cedar-operations.md",
+          "excerpt": "Cedar retains pilot logs for 45 days.",
+          "char_start": 124,
+          "char_end": 161,
+          "page_number": null
+        }
+      ]
+    },
+    {
+      "id": "conflict-04",
+      "category": "conflict",
+      "question": "What is Cedar's monthly pilot budget?",
+      "answerability": "conflicted",
+      "reference_answer": "The planning memo says: Cedar's monthly pilot budget is 6,000 USD. The operations memo says: Cedar's monthly pilot budget is 7,500 USD. Neither has priority; report the disagreement rather than choose one value.",
+      "required_facts": [
+        "Cedar's monthly pilot budget is 6,000 USD.",
+        "Cedar's monthly pilot budget is 7,500 USD.",
+        "Identify both source memos and state that the disagreement is unresolved."
+      ],
+      "gold_evidence": [
+        {
+          "document": "cedar-planning.md",
+          "excerpt": "Cedar's monthly pilot budget is 6,000 USD.",
+          "char_start": 158,
+          "char_end": 200,
+          "page_number": null
+        },
+        {
+          "document": "cedar-operations.md",
+          "excerpt": "Cedar's monthly pilot budget is 7,500 USD.",
+          "char_start": 162,
+          "char_end": 204,
+          "page_number": null
+        }
+      ]
+    },
+    {
+      "id": "conflict-05",
+      "category": "conflict",
+      "question": "What is Cedar's primary pilot region?",
+      "answerability": "conflicted",
+      "reference_answer": "The planning memo says: Cedar's primary pilot region is eu-central-1. The operations memo says: Cedar's primary pilot region is eu-west-1. Neither has priority; report the disagreement rather than choose one value.",
+      "required_facts": [
+        "Cedar's primary pilot region is eu-central-1.",
+        "Cedar's primary pilot region is eu-west-1.",
+        "Identify both source memos and state that the disagreement is unresolved."
+      ],
+      "gold_evidence": [
+        {
+          "document": "cedar-planning.md",
+          "excerpt": "Cedar's primary pilot region is eu-central-1.",
+          "char_start": 201,
+          "char_end": 246,
+          "page_number": null
+        },
+        {
+          "document": "cedar-operations.md",
+          "excerpt": "Cedar's primary pilot region is eu-west-1.",
+          "char_start": 205,
+          "char_end": 247,
+          "page_number": null
+        }
+      ]
+    }
+  ]
+}

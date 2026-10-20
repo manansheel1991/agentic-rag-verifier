@@ -107,3 +107,7 @@ Tests use temporary local Chroma directories, mocked model providers, blocked Py
 Focused claim tests cover valid support, fabricated IDs and excerpts, unsupported numbers, contradictory evidence, source disagreements, partial answers, missing coverage and malformed audits. Mocked tests validate **enforcement**, not the accuracy of the model's semantic judgment. A model can still incorrectly label a claim supported despite a real citation and matching quote.
 
 Live credentials, live model compatibility and provider quality are not tested. Local readers/writers are serialized for correctness, so this implementation is intended for modest local workloads rather than distributed serving. Text extraction supplies page-relative character offsets, not PDF bounding boxes. Model critics can still make mistakes.
+
+## Paired development evaluation
+
+See [evaluation/README.md](evaluation/README.md) for the synthetic, review-required 25-question dataset, an offline mock run, a separate explicit live-API command, human review instructions, metric denominators and cost accounting. The harness compares only basic RAG with the existing verification pipeline, without recovery. Mock outputs are plumbing fixtures, not model performance.

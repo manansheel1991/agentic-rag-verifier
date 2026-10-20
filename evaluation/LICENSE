@@ -1,0 +1,10 @@
+SPDX-License-Identifier: CC0-1.0
+
+The synthetic sample corpus and dataset in this directory are dedicated to the
+public domain under CC0 1.0 Universal. They may be copied, modified and
+redistributed, including commercially, without attribution requirements.
+
+CC0 text: https://creativecommons.org/publicdomain/zero/1.0/legalcode
+
+These files describe fictional systems and people. They are development
+fixtures requiring human review, not an independently collected benchmark.

@@ -23,3 +23,5 @@ Thumbs.db
 **/chroma.sqlite3*
 **/documents.sqlite3*
 **/documents.lock
+# Paired evaluation outputs and their local indexes
+/eval_runs/

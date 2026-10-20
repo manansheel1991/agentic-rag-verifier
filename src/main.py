@@ -96,6 +96,29 @@ def verify_response(query, context, response: StructuredAnswer, model_name=GEMIN
         ClaimAudit, model_name)
 
 
+def answer_from_evidence(user_query, chunks, generation_model, result, stage):
+    """Existing verification stages, reusable with a fixed initial retrieval in evaluation."""
+    good = stage("context_verification", lambda: verify_context(
+        user_query, chunks, generation_model, result.audit_log))
+    if not good:
+        result.error_message = "Zero chunks passed verification"
+        result.error_category = "no_relevant_context"
+        result.audit_log.append(result.error_message)
+        return None
+    draft = stage("generation", lambda: generate_answer(user_query, good, generation_model))
+    result.requested_parts = draft.requested_parts
+    # Record the model that synthesized the answer, even if the auditor later fails over.
+    answer_calls = [call for call in (config.CALL_TRACE.get() or []) if call["kind"] == "generation"]
+    if answer_calls:
+        result.generation_model_used = answer_calls[-1]["model"]
+    # Include the full retrieval so the relevance filter cannot hide opposing evidence.
+    audit = stage("claim_audit", lambda: verify_response(user_query, chunks, draft, generation_model))
+    apply_claim_audit(result, draft, audit, chunks)
+    result.audit_log.append(audit.model_dump_json())
+    result.audit_log.append(f"Claim verification: {result.outcome}")
+    return draft
+
+
 def run_pipeline(file_path, user_query, chunk_size=DEFAULT_CHUNK_SIZE,
                  chunk_overlap=DEFAULT_CHUNK_OVERLAP, embedding_model=GEMINI_EMBED_MODEL,
                  generation_model=GEMINI_GEN_MODEL) -> PipelineResult:
@@ -118,24 +141,7 @@ def run_pipeline(file_path, user_query, chunk_size=DEFAULT_CHUNK_SIZE,
         chunks = stage("retrieval", lambda: chroma_vector_retrieval(
             user_query, doc.id, embedding_model, chunk_size, chunk_overlap))
         result.audit_log.append(f"Retrieved {len(chunks)} chunks")
-        good = stage("context_verification", lambda: verify_context(
-            user_query, chunks, generation_model, result.audit_log))
-        if not good:
-            result.error_message = "Zero chunks passed verification"
-            result.error_category = "no_relevant_context"
-            result.audit_log.append(result.error_message)
-            return result
-        draft = stage("generation", lambda: generate_answer(user_query, good, generation_model))
-        result.requested_parts = draft.requested_parts
-        # Record the model that synthesized the answer, even if the auditor later fails over.
-        answer_calls = [call for call in trace if call["kind"] == "generation"]
-        if answer_calls:
-            result.generation_model_used = answer_calls[-1]["model"]
-        # Include the full retrieval so the relevance filter cannot hide opposing evidence.
-        audit = stage("claim_audit", lambda: verify_response(user_query, chunks, draft, generation_model))
-        apply_claim_audit(result, draft, audit, chunks)
-        result.audit_log.append(audit.model_dump_json())
-        result.audit_log.append(f"Claim verification: {result.outcome}")
+        answer_from_evidence(user_query, chunks, generation_model, result, stage)
     except Exception as exc:
         if isinstance(exc, ProviderError):
             result.error_category = exc.category

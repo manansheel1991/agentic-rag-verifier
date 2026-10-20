@@ -29,6 +29,8 @@ CHROMA_CLIENT = None  # Optional injected client; no persistent files created on
 gemini_client_obj = None
 openai_client_obj = None
 CALL_TRACE = ContextVar("provider_call_trace", default=None)
+API_CALL_TRACE = ContextVar("api_attempt_trace", default=None)
+GENERATION_FALLBACK_ENABLED = ContextVar("generation_fallback_enabled", default=True)
 
 
 class EmbeddingSpec(BaseModel):
@@ -125,15 +127,40 @@ def _record(kind, provider, model, response):
     trace.append({"kind": kind, "model": f"{provider}/{model}", "tokens": tokens})
 
 
+def _request(kind, provider, model, call):
+    """Optional evaluation telemetry: count actual SDK attempts, including failures."""
+    trace = API_CALL_TRACE.get()
+    if trace is None:
+        return call()
+    event = {"kind": kind, "model": f"{provider}/{model}", "status": "error", "tokens": None}
+    trace.append(event)
+    started = time.perf_counter()
+    try:
+        response = call()
+        usage = getattr(response, "usage", None) or getattr(response, "usage_metadata", None)
+        event["tokens"] = getattr(usage, "total_tokens", None)
+        if event["tokens"] is None:
+            event["tokens"] = getattr(usage, "total_token_count", None)
+        event["status"] = "response"
+        return response
+    except Exception as exc:
+        event["error_category"] = _classify(exc)
+        raise
+    finally:
+        event["latency_ms"] = (time.perf_counter() - started) * 1000
+
+
 def get_vector_embedding(text, model_name=GEMINI_EMBED_MODEL):
     spec = embedding_spec(model_name)
     def call():
         client = _client(spec.provider)
         if spec.provider == "gemini":
-            response = client.models.embed_content(model=spec.model, contents=text)
+            response = _request("embedding", spec.provider, spec.model,
+                                lambda: client.models.embed_content(model=spec.model, contents=text))
             vector = response.embeddings[0].values
         else:
-            response = client.embeddings.create(model=spec.model, input=[text])
+            response = _request("embedding", spec.provider, spec.model,
+                                lambda: client.embeddings.create(model=spec.model, input=[text]))
             vector = response.data[0].embedding
         _record("embedding", spec.provider, spec.model, response)
         return vector
@@ -150,7 +177,7 @@ def _generation(prompt, temperature, model_name, schema=None):
     if provider not in ("gemini", "openai"):
         raise ProviderError("invalid_request", provider)
     candidates = [(provider, model)]
-    if provider == "gemini":
+    if provider == "gemini" and GENERATION_FALLBACK_ENABLED.get():
         candidates.append(("openai", OPENAI_GEN_MODEL))
     failures = []
     for current_provider, current_model in candidates:
@@ -160,17 +187,19 @@ def _generation(prompt, temperature, model_name, schema=None):
                 options = {"temperature": temperature}
                 if schema:
                     options.update(response_mime_type="application/json", response_schema=schema)
-                response = client.models.generate_content(
-                    model=current_model, contents=prompt, config=types.GenerateContentConfig(**options))
+                response = _request("generation", current_provider, current_model,
+                    lambda: client.models.generate_content(
+                        model=current_model, contents=prompt, config=types.GenerateContentConfig(**options)))
                 content = response.text
             else:
                 options = {}
                 if schema:
                     options["response_format"] = {"type": "json_schema", "json_schema": {
                         "name": schema.__name__, "strict": True, "schema": schema.model_json_schema()}}
-                response = client.chat.completions.create(
-                    model=current_model, messages=[{"role": "user", "content": prompt}],
-                    temperature=temperature, **options)
+                response = _request("generation", current_provider, current_model,
+                    lambda: client.chat.completions.create(
+                        model=current_model, messages=[{"role": "user", "content": prompt}],
+                        temperature=temperature, **options))
                 content = response.choices[0].message.content
             _record("generation", current_provider, current_model, response)
             if not isinstance(content, str) or not content.strip():
